@@ -1,4 +1,4 @@
-﻿using Telegram.Bot;
+using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
@@ -37,6 +37,16 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
     var chatId = update.Message.Chat.Id;
     var messageText = update.Message.Text;
 
+    //создание кнопки, отвечающей за набор очков. Не работает, не понятно, как отслеживать нажатие и прибавлять очки
+    InlineKeyboardMarkup farm = new(new[]
+ {
+        new []
+        {
+            InlineKeyboardButton.WithCallbackData(text: "CLICK!", callbackData: "11"),
+        },
+
+    });
+
     if (messageText == "/start")
     {
         Message sentMessage = await botClient.SendTextMessageAsync(
@@ -45,38 +55,26 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
         cancellationToken: cancellationToken);
     }
   
-           //Обработка первого ответа
-        else if (messageText == "Да" || messageText == "да")
-        
+        //Обработка первого ответа
+        else if (messageText == "Да" || messageText == "да")   
         {
-        //создание кнопки, отвечающей за набор очков. Не работает, не понятно, как отслеживать нажатие и прибавлять очки
-        InlineKeyboardMarkup farm = new(new[]
-    {
-        new []
-        {
-            
-            InlineKeyboardButton.WithCallbackData(text: "farm", callbackData: "1"),    
-        },   
- 
-    });
-               
-
         Message sentYes = await botClient.SendTextMessageAsync(
-                chatId: chatId, text: "Начинаем. В нашем вузе ты теряешь не всю стипендию, а только ее часть, ты должен сам ее зарабатывать. За каждое выполненное задание изначально ты получаешь 0.01 рублей. Так как я гений учебы, то тебе надо просто нажимать на кнопку, чтобы заработать деньги. В магазине ты можешь купить бустеры, чтобы зарабатывать быстрее.", 
-                replyMarkup: farm,
-                cancellationToken: cancellationToken);
-        }
-    //обработка второго ответа
+            chatId: chatId,
+            text: "Отлично, просто нажимай на эту кнопку и получай очки. Командой '/money' можно узнать сколько денег у тебе. Прописав '/shop' можно увидеть список бустеров. Удачи!",
+            replyMarkup: farm,
+            cancellationToken: cancellationToken);
+    }
+
+        //обработка второго ответа
         else if (messageText == "нет" || messageText == "Нет")
     {
         Message sentNo = await botClient.SendTextMessageAsync(
                 chatId: chatId, text: "Мне нечего кушать, ты должен быть готов.", cancellationToken: cancellationToken);
-    }
-     
-    
-    Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
+    }   
 
-    
+      
+    Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
+ 
 }
 
 Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
