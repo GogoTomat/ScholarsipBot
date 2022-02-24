@@ -21,6 +21,10 @@ botClient.StartReceiving(
 
 var me = await botClient.GetMeAsync();
 
+List<string> shop = new List<string>() { "1. Купить шаурму за 10 очков(+0.01 за клик)", "2. Выпить энергетик Nurb за 50 очков(+0.05 за клик)",
+    "3. Сходить на консультацию за 100 очков(+0.5 за клик)", "4. Сходить на лекция за 500 очков(+1 за клик)", "5. Сходить на экзамен за 1000 очков(+5 за клик)" }; 
+
+
 Console.WriteLine($"Start listening for @{me.Username}");
 Console.ReadLine();
 
@@ -71,6 +75,17 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
         Message sentNo = await botClient.SendTextMessageAsync(
                 chatId: chatId, text: "Мне нечего кушать, ты должен быть готов.", cancellationToken: cancellationToken);
     }   
+
+        //обработка магазина
+        else if(messageText == "/shop")
+    {
+        Message sentShop = await botClient.SendTextMessageAsync(
+            chatId: chatId,
+            //вот тут надо сделать так, чтобы оно ввыводилось в разные строки.
+            text: "1. Купить шаурму за 10 очков(+0.01 за клик) 2. Выпить энергетик Nurb за 50 очков(+0.05 за клик) 3. Сходить на консультацию за 100 очков(+0.5 за клик) 4. Сходить на лекция за 500 очков(+1 за клик) 5. Сходить на экзамен за 1000 очков(+5 за клик)",
+            cancellationToken: cancellationToken
+            );
+    }
 
       
     Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
