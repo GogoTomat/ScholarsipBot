@@ -21,18 +21,36 @@ botClient.StartReceiving(
 
 var me = await botClient.GetMeAsync();
 
-List<string> shop = new List<string>() { "1. Купить шаурму за 10 очков(+0.01 за клик)", "2. Выпить энергетик Nurb за 50 очков(+0.05 за клик)",
-    "3. Сходить на консультацию за 100 очков(+0.5 за клик)", "4. Сходить на лекция за 500 очков(+1 за клик)", "5. Сходить на экзамен за 1000 очков(+5 за клик)" }; 
-
+double money = 0;
+double booster1 = 0;
+double Bn1 = 0;
+double booster2 = 0;
+double Bn2 = 0;
+double booster3 = 0;
+double Bn3 = 0;
+double booster4 = 0;
+double Bn4 = 0;
+double booster5 = 0;
+double Bn5 = 0;
 
 Console.WriteLine($"Start listening for @{me.Username}");
 Console.ReadLine();
 
 cts.Cancel();
 
+//вот эта штука отвечает за отслеживания нажажатия кнопки 
 async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
 {
-    //начало
+    if (update.Type == UpdateType.CallbackQuery)
+    {
+        //там ниже кнопка, у нее CallBackData = farm, значит мы по колбек дате отслеживаем нажатие именно этой кнопки
+        if (update.CallbackQuery.Data == "farm")
+        {
+            await botClient.AnswerCallbackQueryAsync(callbackQueryId: update.CallbackQuery.Id, text: "+points");
+        }
+        return;
+    }
+
     if (update.Type != UpdateType.Message)
         return;
     if (update.Message!.Type != MessageType.Text)
@@ -46,11 +64,12 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
  {
         new []
         {
-            InlineKeyboardButton.WithCallbackData(text: "CLICK!", callbackData: "11"),
+            InlineKeyboardButton.WithCallbackData(text: "CLICK", callbackData: "farm")
         },
 
     });
 
+    //начало
     if (messageText == "/start")
     {
         Message sentMessage = await botClient.SendTextMessageAsync(
@@ -76,13 +95,16 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
                 chatId: chatId, text: "Мне нечего кушать, ты должен быть готов.", cancellationToken: cancellationToken);
     }   
 
-        //обработка магазина
+        //обработка магазина, надо дописать кнопки 
         else if(messageText == "/shop")
     {
         Message sentShop = await botClient.SendTextMessageAsync(
             chatId: chatId,
-            //вот тут надо сделать так, чтобы оно ввыводилось в разные строки.
-            text: "1. Купить шаурму за 10 очков(+0.01 за клик) 2. Выпить энергетик Nurb за 50 очков(+0.05 за клик) 3. Сходить на консультацию за 100 очков(+0.5 за клик) 4. Сходить на лекция за 500 очков(+1 за клик) 5. Сходить на экзамен за 1000 очков(+5 за клик)",
+            text: "1. Купить шаурму за 10 очков(+0.01 за клик) " + '\n' +
+            "2. Выпить энергетик Nurb за 50 очков(+0.05 за клик) " + '\n' +
+            "3. Сходить на консультацию за 100 очков(+0.5 за клик)" + '\n' +
+           " 4. Сходить на лекция за 500 очков(+1 за клик) " + '\n' +
+            "5. Сходить на экзамен за 1000 очков(+5 за клик)",
             cancellationToken: cancellationToken
             );
     }
