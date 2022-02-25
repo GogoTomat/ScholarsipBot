@@ -26,30 +26,24 @@ Console.ReadLine();
 
 cts.Cancel();
 
-//вот эта штука отвечает за отслеживания нажажатия кнопки 
 async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
 {
-
     if (update.Type == UpdateType.CallbackQuery)
-    {
-        //там ниже кнопка, у нее CallBackData = farm, значит мы по колбек дате отслеживаем нажатие именно этой кнопки
-        if (update.CallbackQuery.Data == "farm")
+    {        if (update.CallbackQuery.Data == "farm")
         {
             Info.money += Info.acc;
             await botClient.AnswerCallbackQueryAsync(callbackQueryId: update.CallbackQuery.Id, text: '+' + Info.acc.ToString());
             Console.WriteLine(Info.money);
         }
-        //отслеживание кнопок магазина
         
         if (update.CallbackQuery.Data == "shaurma")
         {
             if (Info.money >= 100)
             {
-                Info.b1 += 1;
                 Info.n1 += 1;
                 Info.money -= 100;
-                await botClient.AnswerCallbackQueryAsync(callbackQueryId: update.CallbackQuery.Id, text: "Куплена 1 шаурма!");
-            }
+                Info.acc += 1;
+                await botClient.AnswerCallbackQueryAsync(callbackQueryId: update.CallbackQuery.Id, text: "Куплена 1 шаурма!");            }
             else {
                 await botClient.AnswerCallbackQueryAsync(callbackQueryId: update.CallbackQuery.Id, text: "Недостаточно денег");
             }
@@ -59,9 +53,9 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
         {
             if (Info.money >= 500)
             {
-                Info.b2 += 5;
                 Info.n2 += 1;
                 Info.money -= 500;
+                Info.acc += 5;
                 await botClient.AnswerCallbackQueryAsync(callbackQueryId: update.CallbackQuery.Id, text: "Куплен 1 энергетик!");
             }
             else
@@ -74,9 +68,9 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
         {
             if (Info.money >= 1500)
             {
-                Info.b3 += 15;
                 Info.n3 += 1;
                 Info.money -= 1500;
+                Info.acc += 15;
                 await botClient.AnswerCallbackQueryAsync(callbackQueryId: update.CallbackQuery.Id, text: "Вы успешно сходили на консультацию!");
             }
             else
@@ -89,9 +83,9 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
         {
             if (Info.money >= 10000)
             {
-                Info.b4 += 100;
                 Info.n4 += 1;
                 Info.money -= 10000;
+                Info.acc += 100;
                 await botClient.AnswerCallbackQueryAsync(callbackQueryId: update.CallbackQuery.Id, text: "Вы успешно сходили на лекцию!");
             }
             else
@@ -102,11 +96,11 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
 
         if (update.CallbackQuery.Data == "ex")
         {
-            if (Info.money >= 500000)
+            if (Info.money >= 50000)
             {
-                Info.b5 += 1000;
                 Info.n5 += 1;
-                Info.money -= 500000;
+                Info.money -= 50000;
+                Info.acc += 500;
                 await botClient.AnswerCallbackQueryAsync(callbackQueryId: update.CallbackQuery.Id, text: "Вы успешно сдали экзамен!");
             }
             else
@@ -125,7 +119,6 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
     var chatId = update.Message.Chat.Id;
     var messageText = update.Message.Text;
 
-    //создание кнопки, отвечающей за набор очков.
     InlineKeyboardMarkup farm = new(new[]
  {
         new []
@@ -148,8 +141,6 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
 
     });
 
-
-    //начало
     if (messageText == "/start")
     {
         Message sentMessage = await botClient.SendTextMessageAsync(
@@ -158,7 +149,6 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
         cancellationToken: cancellationToken);
     }
   
-        //Обработка первого ответа
         else if (messageText == "Да" || messageText == "да")   
         {
         Message sentYes = await botClient.SendTextMessageAsync(
@@ -180,11 +170,11 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
     {
         Message sentShop = await botClient.SendTextMessageAsync(
             chatId: chatId,
-            text: "1. Купить шаурму за 10 очков(+0.01 за клик) " + '\n' +
-            "2. Выпить энергетик Nurb за 50 очков(+0.05 за клик) " + '\n' +
-            "3. Сходить на консультацию за 100 очков(+0.5 за клик)" + '\n' +
-           " 4. Сходить на лекция за 500 очков(+1 за клик) " + '\n' +
-            "5. Сходить на экзамен за 1000 очков(+5 за клик)",
+            text: "1. Купить шаурму за 100 очков(+1 за клик) " + '\n' +
+            "2. Выпить энергетик Nurb за 500 очков(+5 за клик) " + '\n' +
+            "3. Сходить на консультацию за 1500 очков(+15 за клик)" + '\n' +
+           " 4. Сходить на лекция за 10000 очков(+100 за клик) " + '\n' +
+            "5. Сходить на экзамен за 50000 очков(+500 за клик)",
             replyMarkup: shop,
             cancellationToken: cancellationToken
             );
@@ -204,6 +194,18 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
             chatId: chatId,
             text: "Кликай!!!",
             replyMarkup: farm,
+            cancellationToken: cancellationToken
+            );
+    }
+        else if(messageText == "/amount")
+    {
+        Message sentAmount = await botClient.SendTextMessageAsync(
+            chatId: chatId,
+            text: "Количество шаурмы:" + " " + Info.n1.ToString() + '\n' +
+                  "Количество энергетиков" + " " + Info.n2.ToString() + '\n' +
+                  "Количество консультаций" + " " + Info.n3.ToString() + '\n' +
+                  "Количсетво практик" + " " + Info.n4.ToString() + '\n' +
+                  "Количество экзаменов" + " " + Info.n5.ToString() + '\n',
             cancellationToken: cancellationToken
             );
     }
