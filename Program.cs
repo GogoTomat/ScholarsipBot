@@ -32,14 +32,14 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
 
     if (update.Type == UpdateType.CallbackQuery)
     {
-        //там ниже кнопка, у нее CallBackData = farm, значит мы по колбек дате отслеживаем нажатие именно этой кнопки, не работает изменение переменной
+        //там ниже кнопка, у нее CallBackData = farm, значит мы по колбек дате отслеживаем нажатие именно этой кнопки
         if (update.CallbackQuery.Data == "farm")
         {
             Info.money += Info.acc;
             await botClient.AnswerCallbackQueryAsync(callbackQueryId: update.CallbackQuery.Id, text: '+' + Info.acc.ToString());
             Console.WriteLine(Info.money);
         }
-        //отслеживание кнопок магазина, толком не работает изменение переменных
+        //отслеживание кнопок магазина
         
         if (update.CallbackQuery.Data == "shaurma")
         {
@@ -125,7 +125,7 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
     var chatId = update.Message.Chat.Id;
     var messageText = update.Message.Text;
 
-    //создание кнопки, отвечающей за набор очков. Не работает, не понятно, как отслеживать нажатие и прибавлять очки
+    //создание кнопки, отвечающей за набор очков.
     InlineKeyboardMarkup farm = new(new[]
  {
         new []
