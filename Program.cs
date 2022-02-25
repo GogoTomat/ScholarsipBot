@@ -28,7 +28,6 @@ Console.ReadLine();
 
 cts.Cancel();
 
-//вот эта штука отвечает за отслеживания нажажатия кнопки 
 async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
 {
     double money = 10;
@@ -46,6 +45,7 @@ async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, Cancel
 
     if (update.Type == UpdateType.CallbackQuery)
     {
+        //вот эта штука отвечает за отслеживания нажажатия кнопки 
         //там ниже кнопка, у нее CallBackData = farm, значит мы по колбек дате отслеживаем нажатие именно этой кнопки, не работает изменение переменной
         if (update.CallbackQuery.Data == "farm")
         {
